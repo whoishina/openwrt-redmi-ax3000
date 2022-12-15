@@ -318,7 +318,7 @@ define Download
 	mkdir -p $(DL_DIR)
 	$(call locked, \
 		$(if $(DownloadMethod/$(call dl_method,$(URL),$(PROTO))), \
-			$(call DownloadMethod/$(call dl_method,$(URL),$(PROTO)),check,$(if $(filter default,$(1)),PKG_,Download/$(1):)), \
+			[ -f "$(DL_DIR)/$(FILE)" ] || ( $(call DownloadMethod/$(call dl_method,$(URL),$(PROTO)),check,$(if $(filter default,$(1)),PKG_,Download/$(1):)) ), \
 			$(DownloadMethod/unknown) \
 		),\
 		$(FILE))

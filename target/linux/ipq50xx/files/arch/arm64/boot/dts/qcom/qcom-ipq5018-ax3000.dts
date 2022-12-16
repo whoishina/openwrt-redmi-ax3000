@@ -23,9 +23,44 @@
 	};
 
 	reserved-memory {
+		q6_mem_regions: q6_mem_regions@4B000000 {
+			no-map;
+			reg = <0x0 0x4B000000 0x0 0x4500000>;
+		};
+
+		q6_code_data: q6_code_data@4B000000 {
+			no-map;
+			reg = <0x0 0x4B000000 0x0 0x1400000>;
+		};
+
+		q6_ipq5018_data: q6_ipq5018_data@4C400000 {
+			no-map;
+			reg = <0x0 0x4C400000 0x0 0xD00000>;
+		};
+
+		m3_dump: m3_dump@4D100000 {
+			no-map;
+			reg = <0x0 0x4D100000 0x0 0x100000>;
+		};
+
 		q6_etr_region: q6_etr_dump@4D200000 {
 			no-map;
 			reg = <0x0 0x4D200000 0x0 0x100000>;
+		};
+
+		q6_qcn6122_data1: q6_qcn6122_data1@4D300000 {
+			no-map;
+			reg = <0x0 0x4D300000 0x0 0xF00000>;
+		};
+
+		m3_dump_qcn6122_1: m3_dump_qcn6122_1@4E200000 {
+			no-map;
+			reg = <0x0 0x4E200000 0x0 0x100000>;
+		};
+
+		q6_qcn6122_etr_1: q6_qcn6122_etr_1@4E300000 {
+			no-map;
+			reg = <0x0 0x4E300000 0x0 0x100000>;
 		};
 	};
 
@@ -391,4 +426,110 @@
 	ethernet-phy@4 {
 		reg = <4>;
 	};
+};
+
+&qcom_q6v5_wcss {
+	qcom,multipd_arch;
+	memory-region = <&q6_mem_regions>;
+
+	qcom,share_bootargs;
+	qcom,bootargs_smem = <507>;
+	boot-args = <0x2 0x4 0x2 0x1B 0x0 0x0>;
+
+	// IPQ5018
+	q6v5_wcss_userpd1 {
+		qca,asid = <1>;
+
+		memory-region = 
+			<&q6_ipq5018_data>,
+			<&m3_dump>,
+			<&q6_etr_region>;
+
+		interrupts-extended = 
+			<&wcss_smp2p_in 8 0>,
+			<&wcss_smp2p_in 9 0>,
+			<&wcss_smp2p_in 12 0>,
+			<&wcss_smp2p_in 11 0>;
+		interrupt-names =
+			"fatal",
+			"ready",
+			"spawn_ack",
+			"stop-ack";
+
+		qcom,smem-states = 
+			<&wcss_smp2p_out 8>,
+			<&wcss_smp2p_out 9>,
+			<&wcss_smp2p_out 10>;
+		qcom,smem-state-names = 
+			"shutdown",
+			"stop",
+			"spawn";
+
+		m3_firmware = "IPQ5018/m3_fw.mdt";
+		qca,auto-restart;
+		qca,int_radio;
+	};
+
+	// QCN6102
+	q6v5_wcss_userpd2 {
+		qca,asid = <2>;
+
+		memory-region =
+			<&q6_qcn6122_data1>,
+			<&m3_dump_qcn6122_1>,
+			<&q6_qcn6122_etr_1>;
+
+		interrupts-extended =
+			<&wcss_smp2p_in 16 0>,
+			<&wcss_smp2p_in 17 0>,
+			<&wcss_smp2p_in 20 0>,
+			<&wcss_smp2p_in 19 0>;
+		interrupt-names =
+			"fatal",
+			"ready",
+			"spawn_ack",
+			"stop-ack";
+
+		qcom,smem-states =
+			<&wcss_smp2p_out 16>,
+			<&wcss_smp2p_out 17>,
+			<&wcss_smp2p_out 18>;
+		qcom,smem-state-names =
+			"shutdown",
+			"stop",
+			"spawn";
+
+		m3_firmware = "qcn6122/m3_fw.mdt";
+		qca,auto-restart;
+	};
+};
+
+&wifi0 {
+	// IPQ5000
+	qcom,multipd_arch;
+
+	qcom,bdf-addr = <0x4C400000 0x4C400000 0x4C400000 0x0 0x0>;
+	qcom,caldb-addr = <0x4D400000>;
+	m3-dump-addr = <0x4D200000>;
+
+	qcom,board_id = <0x10>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd1";
+
+	status = "ok";
+};
+
+&wifi1 {
+	// QCN6102
+	qcom,multipd_arch;
+
+	qcom,bdf-addr = <0x4D600000 0x4D600000 0x4D300000 0x0 0x0>;
+	qcom,caldb-addr = <0x4E800000>;
+	m3-dump-addr = <0x4E600000>;
+
+	// According to the vendor dtb, the board_id is 0x50.
+	// But the boot log show that it will be overridden as 0x60.
+	qcom,board_id = <0x60>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd2";
+
+	status = "ok";
 };

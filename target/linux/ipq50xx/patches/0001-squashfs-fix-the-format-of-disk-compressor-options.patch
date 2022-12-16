@@ -1,0 +1,25 @@
+squashfs: fix the format of disk compressor options
+
+---
+ fs/squashfs/xz_wrapper.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/fs/squashfs/xz_wrapper.c b/fs/squashfs/xz_wrapper.c
+index 9f4830a4..c609624e 100644
+--- a/fs/squashfs/xz_wrapper.c
++++ b/fs/squashfs/xz_wrapper.c
+@@ -40,10 +40,8 @@ struct squashfs_xz {
+ };
+ 
+ struct disk_comp_opts {
+-	__le32 flags;
+-	__le16 bit_opts;
+-	__le16 fb;
+ 	__le32 dictionary_size;
++	__le32 flags;
+ };
+ 
+ struct comp_opts {
+-- 
+2.25.1
+

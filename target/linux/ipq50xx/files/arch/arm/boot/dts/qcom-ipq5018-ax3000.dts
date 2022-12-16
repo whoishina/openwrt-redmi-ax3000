@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: (GPL-2.0+)
+
+#include "../../../arm64/boot/dts/qcom/qcom-ipq5018-ax3000.dts"
+
+/ {
+	pmuv8: pmu {
+		compatible = "arm,cortex-a7-pmu";
+	};
+};

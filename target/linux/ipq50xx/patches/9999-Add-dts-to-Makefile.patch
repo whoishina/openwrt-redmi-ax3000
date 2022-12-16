@@ -1,0 +1,21 @@
+Add dts to Makefile
+
+---
+ arch/arm/boot/dts/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 540eb88..b4d9742 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -565,6 +565,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
+ endif
+ else
+ dtb-$(CONFIG_ARCH_QCOM) += \
++	qcom-ipq5018-ax3000.dtb \
+ 	qcom-ipq5018-sod.dtb \
+ 	qcom-ipq5018-emulation-c1.dtb \
+ 	qcom-ipq5018-emulation-c2.dtb \
+-- 
+2.25.1
+
